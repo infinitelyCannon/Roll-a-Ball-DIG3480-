@@ -6,19 +6,27 @@ using UnityEngine.UI;
 public class PlayerController : MonoBehaviour {
 
     public float speed;
-    public Text countText;
+    public Text scoreText;
     public Text winText;
+    public Text countText;
+    public GameObject groundOne;
 
     private Rigidbody rb;
     private int count;
+    private int score;
+    private int pickupSum;
+    private int pickupTotal;
 
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody>();
         count = 0;
-        SetCountText();
+        score = 0;
         winText.text = "";
-	}
+        pickupSum = 0;
+        pickupTotal = GameObject.FindGameObjectsWithTag("Pick Up").Length;
+        SetCountText();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -40,6 +48,15 @@ public class PlayerController : MonoBehaviour {
         if(other.gameObject.CompareTag("Pick Up"))
         {
             other.gameObject.SetActive(false);
+            score++;
+            pickupSum++;
+            count++;
+            SetCountText();
+        }
+        else if(other.gameObject.CompareTag("Penalty"))
+        {
+            other.gameObject.SetActive(false);
+            score--;
             count++;
             SetCountText();
         }
@@ -47,10 +64,15 @@ public class PlayerController : MonoBehaviour {
 
     void SetCountText()
     {
-        countText.text = "Count: " + count.ToString();
-        if(count >= 12)
+        scoreText.text = "Score: " + score.ToString();
+        countText.text = "Pickups: " + count.ToString();
+        if(pickupSum >= 10)
         {
-            winText.text = "You Win!";
+            groundOne.SetActive(false);
+        }
+        if(pickupSum >= pickupTotal)
+        {
+            winText.text = "You Finished with a score of: " + score;
         }
     }
 }
