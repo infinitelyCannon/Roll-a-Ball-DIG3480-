@@ -10,9 +10,10 @@ public class PlayerController : MonoBehaviour {
     public Text winText;
     public Text countText;
     public GameObject groundOne;
+    public Text debugText;
 
     private Rigidbody rb;
-    private int count;
+    //private int count;
     private int score;
     private int pickupSum;
     private int pickupTotal;
@@ -21,7 +22,6 @@ public class PlayerController : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         rb = GetComponent<Rigidbody>();
-        count = 0;
         score = 0;
         winText.text = "";
         pickupSum = 0;
@@ -32,11 +32,26 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        float zPos = transform.position.z;
-        float xPos = transform.position.x;
+        float hueAngle = UnitAngleDEG(transform.position);
         if (Input.GetKeyUp(KeyCode.Escape)) Application.Quit();
-        mat.color = Color.HSVToRGB(Mathf.Atan(zPos / xPos) / (2f * Mathf.PI), Mathf.Cos(xPos), Mathf.Sin(zPos));
+        mat.color = Color.HSVToRGB(hueAngle / 360f, 1f/* TODO: Change this */, 0.5f/* TODO: Change this */);
+        //debugText.text = hueAngle + " Degrees";
  	}
+
+    private float UnitAngleDEG(Vector3 position)
+    {
+        Vector3 unitVector = Vector3.Normalize(position);
+        float refAngle = Mathf.Atan(unitVector.z / unitVector.x) * Mathf.Rad2Deg;
+
+        if (unitVector.z >= 0f && unitVector.x >= 0f)
+            return refAngle;
+        else if (unitVector.z >= 0f && unitVector.x < 0f)
+            return 180f - Mathf.Abs(refAngle);
+        else if (unitVector.z < 0f && unitVector.x < 0f)
+            return 180f + Mathf.Abs(refAngle);
+        else
+            return 360f - Mathf.Abs(refAngle);
+    }
 
     private void FixedUpdate()
     {
@@ -48,29 +63,27 @@ public class PlayerController : MonoBehaviour {
         rb.AddForce(movement * speed);
     }
 
-    private void OnTriggerEnter(Collider other)
+    /*private void OnTriggerEnter(Collider other)
     {
         if(other.gameObject.CompareTag("Pick Up"))
         {
             other.gameObject.SetActive(false);
             score++;
             pickupSum++;
-            count++;
             SetCountText();
         }
         else if(other.gameObject.CompareTag("Penalty"))
         {
             other.gameObject.SetActive(false);
             score--;
-            count++;
             SetCountText();
         }
-    }
+    }*/
 
     void SetCountText()
     {
         scoreText.text = "Score: " + score.ToString();
-        countText.text = "Pickups: " + count.ToString();
+        countText.text = "Pickups: " + pickupSum.ToString();
         if(pickupSum >= 10)
         {
             groundOne.SetActive(false);
