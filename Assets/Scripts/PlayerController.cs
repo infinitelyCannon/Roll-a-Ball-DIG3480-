@@ -16,6 +16,7 @@ public class PlayerController : MonoBehaviour {
     private int score;
     private int pickupSum;
     private int pickupTotal;
+    private Material mat;
 
 	// Use this for initialization
 	void Start () {
@@ -26,11 +27,15 @@ public class PlayerController : MonoBehaviour {
         pickupSum = 0;
         pickupTotal = GameObject.FindGameObjectsWithTag("Pick Up").Length;
         SetCountText();
+        mat = gameObject.GetComponent<Renderer>().material;
     }
 	
 	// Update is called once per frame
 	void Update () {
+        float zPos = transform.position.z;
+        float xPos = transform.position.x;
         if (Input.GetKeyUp(KeyCode.Escape)) Application.Quit();
+        mat.color = Color.HSVToRGB(Mathf.Atan(zPos / xPos) / (2f * Mathf.PI), Mathf.Cos(xPos), Mathf.Sin(zPos));
  	}
 
     private void FixedUpdate()
