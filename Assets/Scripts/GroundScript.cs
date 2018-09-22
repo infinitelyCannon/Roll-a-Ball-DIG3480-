@@ -5,27 +5,33 @@ using UnityEngine;
 public class GroundScript : MonoBehaviour {
 
     public GameObject player;
-
-    private bool hasStarted = false;
+    public GameObject[] obstacles;
+    public float speed;
 
 	// Use this for initialization
 	void Start () {
-		
+        
 	}
 	
 	// Update is called once per frame
 	void Update () {
-        if (!hasStarted)
-        {
-            transform.position = new Vector3(player.transform.position.x, transform.position.y, player.transform.position.z);
-        }
+        
 	}
+
+    private void CallReadies()
+    {
+        for(int i = 0; i < obstacles.Length; i++)
+        {
+            obstacles[i].GetComponent<MovingBlock>().OnReady();
+        }
+    }
 
     private void OnCollisionEnter(Collision collision)
     {
         if (collision.collider.gameObject.CompareTag("Player"))
         {
-            hasStarted = true;
+            player.GetComponent<PlayerController>().SetGroundScale(8.35f);
+            CallReadies();
         }
     }
 }
